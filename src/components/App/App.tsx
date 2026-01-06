@@ -18,7 +18,7 @@ function App() {
 
   
 
-  const { data, isLoading, isError, isFetched } = useQuery({
+  const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: ['movies', query, page],
     queryFn: () => fetchMovies(query, page),
     enabled: query !== '',
@@ -27,14 +27,13 @@ function App() {
   
   
   const totalPages = data?.total_pages ?? 0
-  const hasResults = data && data.results.length > 0;
 
 
   useEffect(() => {
-  if ( isFetched && data && data.results.length  === 0) {
+  if ( isSuccess && data && data.results.length  === 0) {
         toast.error("No movies found for your request.");
       }
-}, [data, isFetched])
+}, [data, isSuccess])
 
   const handleSearch = async (query: string) => {
     setQuery(query)
@@ -56,7 +55,7 @@ function App() {
         nextLabel="→"
         previousLabel="←"
       />}
-      { hasResults && isLoading ? <Loader /> : null}
+      { isLoading ? <Loader /> : null}
       {isError ? <ErrorMessage /> : null}
       {data && data.results.length > 0 && !isLoading && (
         <MovieGrid movies={data.results} onSelect={setSelectedMovie} />
